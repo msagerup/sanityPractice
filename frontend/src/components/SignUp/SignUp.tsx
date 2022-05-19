@@ -1,13 +1,21 @@
-import { SyntheticEvent, useState } from 'react';
+import { SyntheticEvent, useState, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { IFormState } from '../../types/IForm';
 import styles from './SignUp.module.scss';
 
 const SignUp = () => {
-  const [state, setState] = useState({});
+  const [state, setState] = useState<IFormState>({});
 
   // Variables
   const navigate = useNavigate();
+
+  // Use Effect, Redirects when succesfull api res.
+  useEffect(() => {
+    if (state?.apiRes) {
+      navigate('/');
+    }
+  }, [state]);
 
   /**
    *
@@ -37,8 +45,10 @@ const SignUp = () => {
     try {
       const response = await fetch('/createUser', options);
       const data = await response.json();
-
-      navigate('/');
+      setState((prevState) => ({
+        ...prevState,
+        apiRes: data,
+      }));
     } catch (error) {
       console.error(error);
     }
